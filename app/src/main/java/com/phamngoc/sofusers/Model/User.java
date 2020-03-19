@@ -8,6 +8,10 @@ public class User {
     public String location;
     public String lastAccessDate;
 
+    public User(){
+
+    }
+
     public User(String name, String avatar, String reputation, String location, String lastAccessDate) {
         this.name = name;
         this.avatar = avatar;
