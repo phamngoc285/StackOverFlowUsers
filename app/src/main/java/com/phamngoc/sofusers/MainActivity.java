@@ -1,24 +1,27 @@
 package com.phamngoc.sofusers;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
-import android.os.Handler;
+import android.widget.Toast;
 
+import com.phamngoc.sofusers.Helpers.GetSOFUserListService;
+import com.phamngoc.sofusers.Helpers.RetrofitClientInstance;
 import com.phamngoc.sofusers.Listeners.PaginationListener;
+import com.phamngoc.sofusers.Model.GetUserListResponse;
 import com.phamngoc.sofusers.Model.User;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static android.nfc.tech.MifareUltralight.PAGE_SIZE;
 import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         users = new ArrayList<>();
         GetUsers();
 
-        mUserAdapter = new UserAdapter(users);
+        mUserAdapter = new UserAdapter(users, this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -76,30 +79,44 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void GetUsers() {
-        final ArrayList<User> items = new ArrayList<>();
-        new Handler().postDelayed(new Runnable() {
+
+        GetSOFUserListService service = RetrofitClientInstance.getRetrofitInstance().create(GetSOFUserListService.class);
+        Call<GetUserListResponse> call = service.GetUsers(String.valueOf(currentPage + 1), String.valueOf(PaginationListener.PAGE_SIZE), "stackoverflow");
+        call.enqueue(new Callback<GetUserListResponse>() {
             @Override
-            public void run() {
-                for (int i = 0; i < 10; i++) {
-                    itemCount++;
-                    User postItem = new User("user "+ itemCount, "", "", "", "");
-                    items.add(postItem);
-                }
-                /**
-                 * manage progress view
-                 */
-                if (currentPage != PAGE_START) mUserAdapter.removeLoading();
-                users.addAll(items);
+            public void onResponse(Call<GetUserListResponse> call, Response<GetUserListResponse> response) {
                 swipeRefresh.setRefreshing(false);
-                // check weather is last page or not
-                if (currentPage < totalPage) {
+                if (currentPage != PAGE_START) mUserAdapter.removeLoading();
+                GetUserListResponse result = response.body();
+                users.addAll(result.Users);
+                currentPage++;
+                if(result.HasMore){
                     mUserAdapter.addLoading();
-                } else {
+                }
+                else{
                     isLastPage = true;
                 }
+
+                mUserAdapter.addLoading();
                 isLoading = false;
             }
-        }, 3000);
+
+            @Override
+            public void onFailure(Call<GetUserListResponse> call, Throwable t) {
+                if (currentPage != PAGE_START) mUserAdapter.removeLoading();
+                swipeRefresh.setRefreshing(false);
+                Toast.makeText(MainActivity.this, t.getMessage() /*"Opps, something went wrong...Please try later!"*/, Toast.LENGTH_SHORT).show();
+                isLoading = false;
+
+                List<User> items = new ArrayList<>();
+                for(int i =0; i <5; i++){
+                    items.add(new User("Dummy", "https://www.gravatar.com/avatar/24780fb6df85a943c7aea0402c843737?s=128&d=identicon&r=PG", "", "", "" ));
+                }
+
+                users.addAll(items);
+                mUserAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

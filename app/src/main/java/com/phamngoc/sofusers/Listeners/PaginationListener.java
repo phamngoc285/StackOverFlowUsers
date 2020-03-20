@@ -6,12 +6,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class PaginationListener extends RecyclerView.OnScrollListener {
     public static final int PAGE_START = 1;
+    public static final int PAGE_SIZE = 30;
+
     @NonNull
     private LinearLayoutManager layoutManager;
-    /**
-     * Set scrolling threshold here (for now i'm assuming 10 item in one page)
-     */
-    private static final int PAGE_SIZE = 10;
+
     /**
      * Supporting only LinearLayoutManager for now.
      */

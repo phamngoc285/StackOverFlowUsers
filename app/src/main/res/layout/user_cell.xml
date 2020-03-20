@@ -22,19 +22,19 @@
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="User name"/>
+            android:text="NONAME"/>
 
         <TextView
             android:id="@+id/reputation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Reputation"/>
+            android:text="NoReputation"/>
 
         <TextView
             android:id="@+id/location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Location"/>
+            android:text="NoLocation"/>
     </LinearLayout>
 
 </LinearLayout>
