@@ -5,10 +5,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.phamngoc.sofusers.Adapters.UserAdapter;
+import com.phamngoc.sofusers.Constants.Parameters;
 import com.phamngoc.sofusers.Helpers.GetSOFUserListService;
 import com.phamngoc.sofusers.Helpers.RetrofitClientInstance;
 import com.phamngoc.sofusers.Listeners.ItemListener;
@@ -23,7 +26,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.nfc.tech.MifareUltralight.PAGE_SIZE;
 import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener , ItemListener {
@@ -134,6 +136,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public void onItemClicked(View view, int position) {
         Toast.makeText(this, "Item clicked", Toast.LENGTH_LONG).show();
+
+        User item = users.get(position);
+
+        Intent reputationIntent = new Intent(MainActivity.this, ReputationActivity.class);
+        reputationIntent.putExtra(Parameters.USERID, item.id);
+        reputationIntent.putExtra(Parameters.USERNAME, item.name);
+        reputationIntent.putExtra(Parameters.USERAVATAR, item.avatar);
+        MainActivity.this.startActivity(reputationIntent);
     }
 
     @Override

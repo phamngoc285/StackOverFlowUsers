@@ -1,4 +1,4 @@
-package com.phamngoc.sofusers;
+package com.phamngoc.sofusers.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.phamngoc.sofusers.Listeners.ItemListener;
 import com.phamngoc.sofusers.Model.User;
+import com.phamngoc.sofusers.R;
 import com.phamngoc.sofusers.ViewHolders.BaseViewHolder;
 import com.phamngoc.sofusers.ViewHolders.LoadingViewHolder;
 import com.phamngoc.sofusers.ViewHolders.UserViewHolder;

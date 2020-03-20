@@ -58,19 +58,19 @@ public class UserViewHolder extends BaseViewHolder {
 
     @Override
     public void OnBind(User user) {
-        if(user.name != null){
+        if(user.name != null&& !user.name.isEmpty()){
             userName.setText(user.name);
         }
 
-        if(user.reputation != null){
+        if(user.reputation != null && !user.reputation.isEmpty()){
             reputation.setText(user.reputation);
         }
 
-        if(user.location != null){
+        if(user.location != null && !user.location.isEmpty()){
             location.setText(user.location);
         }
 
-        if(user.avatar != null){
+        if(user.avatar != null && !user.avatar.isEmpty()){
             //avatar.setImageURI(new Uri(user.avatar));
             Picasso.with(context).load(user.avatar).into(avatar);
         }
