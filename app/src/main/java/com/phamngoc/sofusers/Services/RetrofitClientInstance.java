@@ -1,4 +1,4 @@
-package com.phamngoc.sofusers.Helpers;
+package com.phamngoc.sofusers.Services;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

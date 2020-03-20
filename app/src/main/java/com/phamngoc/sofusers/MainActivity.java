@@ -12,8 +12,8 @@ import android.widget.Toast;
 
 import com.phamngoc.sofusers.Adapters.UserAdapter;
 import com.phamngoc.sofusers.Constants.Parameters;
-import com.phamngoc.sofusers.Helpers.GetSOFUserListService;
-import com.phamngoc.sofusers.Helpers.RetrofitClientInstance;
+import com.phamngoc.sofusers.Services.RetrofitClientServices;
+import com.phamngoc.sofusers.Services.RetrofitClientInstance;
 import com.phamngoc.sofusers.Listeners.ItemListener;
 import com.phamngoc.sofusers.Listeners.PaginationListener;
 import com.phamngoc.sofusers.Model.GetUserListResponse;
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
-    private int totalPage = 10;
     private boolean isLoading = false;
     int itemCount = 0;
 
@@ -64,28 +63,27 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         mUserList.addOnScrollListener(new PaginationListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
-                if(isLoading) return;
-                isLoading = true;
-                currentPage++;
                 GetUsers();
             }
 
             @Override
             public boolean isLastPage() {
-                return false;
+                return isLastPage;
             }
 
             @Override
             public boolean isLoading() {
-                return false;
+                return isLoading;
             }
         });
     }
 
     private void GetUsers() {
+        if(isLoading) return;
+        isLoading = true;
 
-        GetSOFUserListService service = RetrofitClientInstance.getRetrofitInstance().create(GetSOFUserListService.class);
-        Call<GetUserListResponse> call = service.GetUsers(String.valueOf(currentPage + 1), String.valueOf(PaginationListener.PAGE_SIZE), "stackoverflow");
+        RetrofitClientServices service = RetrofitClientInstance.getRetrofitInstance().create(RetrofitClientServices.class);
+        Call<GetUserListResponse> call = service.GetUsers(String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), "stackoverflow");
         call.enqueue(new Callback<GetUserListResponse>() {
             @Override
             public void onResponse(Call<GetUserListResponse> call, Response<GetUserListResponse> response) {
