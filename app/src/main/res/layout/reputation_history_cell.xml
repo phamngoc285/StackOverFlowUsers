@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:orientation="horizontal">
+    <TextView
+        android:id="@+id/reputation_type"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:layout_margin="@dimen/small_margin"
+        android:text="No reputation type"/>
+
+    <TextView
+        android:id="@+id/reputation_change"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:layout_margin="@dimen/small_margin"
+        android:text="0"/>
+
+    <TextView
+        android:id="@+id/reputation_change_time"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:layout_margin="@dimen/small_margin"
+        android:text="time"/>
+
+    <TextView
+        android:id="@+id/reputation_change_post"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:layout_margin="@dimen/small_margin"
+        android:text="Post ID"/>
+
+</LinearLayout>

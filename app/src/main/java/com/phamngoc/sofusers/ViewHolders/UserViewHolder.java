@@ -57,7 +57,9 @@ public class UserViewHolder extends BaseViewHolder {
     }
 
     @Override
-    public void OnBind(User user) {
+    public void OnBind(Object item) {
+        User user = (User)item;
+
         if(user.name != null&& !user.name.isEmpty()){
             userName.setText(user.name);
         }
