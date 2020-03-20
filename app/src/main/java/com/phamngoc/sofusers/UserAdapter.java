@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.phamngoc.sofusers.Listeners.ItemListener;
 import com.phamngoc.sofusers.Model.User;
 import com.phamngoc.sofusers.ViewHolders.BaseViewHolder;
 import com.phamngoc.sofusers.ViewHolders.LoadingViewHolder;
@@ -21,11 +22,13 @@ public class UserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private boolean isLoaderVisible = false;
 
     private Context context;
+    ItemListener itemListener;
     private List<User> users;
 
-    public UserAdapter(List<User> users, Context context) {
+    public UserAdapter(List<User> users, Context context, ItemListener listener) {
         this.users = users;
         this.context = context;
+        itemListener = listener;
     }
 
     @NonNull
@@ -34,7 +37,7 @@ public class UserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         if(viewType == VIEW_TYPE_NORMAL){
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.user_cell, parent, false);
-            return new UserViewHolder(view, context);
+            return new UserViewHolder(view, context, itemListener);
         } else if(viewType == VIEW_TYPE_LOADING){
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.loading_cell, parent, false);

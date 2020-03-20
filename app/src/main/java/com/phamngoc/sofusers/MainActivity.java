@@ -6,10 +6,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.phamngoc.sofusers.Helpers.GetSOFUserListService;
 import com.phamngoc.sofusers.Helpers.RetrofitClientInstance;
+import com.phamngoc.sofusers.Listeners.ItemListener;
 import com.phamngoc.sofusers.Listeners.PaginationListener;
 import com.phamngoc.sofusers.Model.GetUserListResponse;
 import com.phamngoc.sofusers.Model.User;
@@ -24,7 +26,7 @@ import retrofit2.Response;
 import static android.nfc.tech.MifareUltralight.PAGE_SIZE;
 import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener , ItemListener {
 
     RecyclerView mUserList;
     UserAdapter mUserAdapter;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         users = new ArrayList<>();
         GetUsers();
 
-        mUserAdapter = new UserAdapter(users, this);
+        mUserAdapter = new UserAdapter(users, this, this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -127,5 +129,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         mUserAdapter.clear();
         GetUsers();
 
+    }
+
+    @Override
+    public void onItemClicked(View view, int position) {
+        Toast.makeText(this, "Item clicked", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onItemBookMarked(View view, int position) {
+        Toast.makeText(this, "Item book marked", Toast.LENGTH_LONG).show();
     }
 }
