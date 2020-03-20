@@ -28,6 +28,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.phamngoc.sofusers.Constants.APIConstants.API_KEY;
+import static com.phamngoc.sofusers.Constants.APIConstants.STACKOVERFLOW;
 import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 
 public class ReputationActivity extends AppCompatActivity {
@@ -115,7 +117,7 @@ public class ReputationActivity extends AppCompatActivity {
         isLoading = true;
 
         RetrofitClientServices service = RetrofitClientInstance.getRetrofitInstance().create(RetrofitClientServices.class);
-        Call<GetReputationResponse> call = service.GetUserReputation("11683"/*userid*/, String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), "stackoverflow");
+        Call<GetReputationResponse> call = service.GetUserReputation("11683"/*userid*/, String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), STACKOVERFLOW, API_KEY);
         call.enqueue(new Callback<GetReputationResponse>() {
             @Override
             public void onResponse(Call<GetReputationResponse> call, Response<GetReputationResponse> response) {
@@ -125,7 +127,7 @@ public class ReputationActivity extends AppCompatActivity {
                 if (currentPage != PAGE_START) reputatonAdapter.removeLoading();
                 GetReputationResponse result = response.body();
                 reputationChanges.addAll(result.ReputationChanges);
-                reputatonAdapter.notifyDataSetChanged();
+                //reputatonAdapter.notifyDataSetChanged();
                 currentPage++;
                 if(result.HasMore){
                     reputatonAdapter.addLoading();
@@ -148,7 +150,7 @@ public class ReputationActivity extends AppCompatActivity {
                 for(int i =0; i <5; i++){
                     items.add(new User("Dummy", "https://www.gravatar.com/avatar/24780fb6df85a943c7aea0402c843737?s=128&d=identicon&r=PG", "", "", "" ));
                 }
-                
+
                 //users.addAll(items);
                 //mUserAdapter.notifyDataSetChanged();
             }

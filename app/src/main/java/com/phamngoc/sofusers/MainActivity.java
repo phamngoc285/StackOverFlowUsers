@@ -26,6 +26,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.phamngoc.sofusers.Constants.APIConstants.API_KEY;
+import static com.phamngoc.sofusers.Constants.APIConstants.STACKOVERFLOW;
 import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener , ItemListener {
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         isLoading = true;
 
         RetrofitClientServices service = RetrofitClientInstance.getRetrofitInstance().create(RetrofitClientServices.class);
-        Call<GetUserListResponse> call = service.GetUsers(String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), "stackoverflow");
+        Call<GetUserListResponse> call = service.GetUsers(String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), STACKOVERFLOW, API_KEY);
         call.enqueue(new Callback<GetUserListResponse>() {
             @Override
             public void onResponse(Call<GetUserListResponse> call, Response<GetUserListResponse> response) {
