@@ -6,12 +6,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
+import android.icu.text.CaseMap;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.phamngoc.sofusers.Adapters.UserAdapter;
 import com.phamngoc.sofusers.Constants.Parameters;
+import com.phamngoc.sofusers.Helpers.DBHelper;
 import com.phamngoc.sofusers.Services.RetrofitClientServices;
 import com.phamngoc.sofusers.Services.RetrofitClientInstance;
 import com.phamngoc.sofusers.Listeners.ItemListener;
@@ -33,9 +36,13 @@ import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener , ItemListener {
 
     RecyclerView mUserList;
+    Button mAllBookmaredButton;
     UserAdapter mUserAdapter;
     SwipeRefreshLayout swipeRefresh;
     List<User> users;
+    List<String> bookmarkedIds;
+
+    DBHelper dbHelper;
 
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
@@ -47,10 +54,23 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAllBookmaredButton = findViewById(R.id.allBookmarkedButton);
+        mAllBookmaredButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(currentPage != PAGE_START && !isLastPage) mUserAdapter.removeLoading();
+                mUserAdapter.clear();
+                List<User> bookmarkedusers = dbHelper.GetAllBookmarked();
+                users.addAll(bookmarkedusers);
+            }
+        });
+
         mUserList = findViewById(R.id.user_list);
         swipeRefresh = findViewById(R.id.swipeRefresh);
         swipeRefresh.setOnRefreshListener(this);
 
+        dbHelper = new DBHelper(this);
+        bookmarkedIds = dbHelper.GetAllBookmarkedUserIDs();
         users = new ArrayList<>();
         GetUsers();
 
@@ -90,8 +110,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             @Override
             public void onResponse(Call<GetUserListResponse> call, Response<GetUserListResponse> response) {
                 swipeRefresh.setRefreshing(false);
-                if (currentPage != PAGE_START) mUserAdapter.removeLoading();
+                if (currentPage != PAGE_START && !isLastPage) mUserAdapter.removeLoading();
                 GetUserListResponse result = response.body();
+                for (User user: result.Users) {
+                    if(IsUserBookmared(user)){
+                        user.isBookmarked = true;
+                    }
+                }
                 users.addAll(result.Users);
                 currentPage++;
                 if(result.HasMore){
@@ -114,13 +139,21 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                 List<User> items = new ArrayList<>();
                 for(int i =0; i <5; i++){
-                    items.add(new User("Dummy", "https://www.gravatar.com/avatar/24780fb6df85a943c7aea0402c843737?s=128&d=identicon&r=PG", "", "", "" ));
+                    items.add(new User("Dummy", "https://www.gravatar.com/avatar/24780fb6df85a943c7aea0402c843737?s=128&d=identicon&r=PG", Double.valueOf("0"), "", Double.valueOf("0") ));
                 }
 
                 users.addAll(items);
                 mUserAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private boolean IsUserBookmared(User user){
+        if(bookmarkedIds.contains(user.id))
+        {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -149,5 +182,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public void onItemBookMarked(View view, int position) {
         Toast.makeText(this, "Item book marked", Toast.LENGTH_LONG).show();
+        dbHelper.BookMarkUser(users.get(position));
     }
 }

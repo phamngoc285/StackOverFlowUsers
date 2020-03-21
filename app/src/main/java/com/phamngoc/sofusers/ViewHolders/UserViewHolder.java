@@ -1,6 +1,7 @@
 package com.phamngoc.sofusers.ViewHolders;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.View;
@@ -64,8 +65,8 @@ public class UserViewHolder extends BaseViewHolder {
             userName.setText(user.name);
         }
 
-        if(user.reputation != null && !user.reputation.isEmpty()){
-            reputation.setText(user.reputation);
+        if(user.reputation != null){
+            reputation.setText(String.valueOf(user.reputation));
         }
 
         if(user.location != null && !user.location.isEmpty()){
@@ -76,6 +77,14 @@ public class UserViewHolder extends BaseViewHolder {
             //avatar.setImageURI(new Uri(user.avatar));
             Picasso.with(context).load(user.avatar).into(avatar);
         }
+
+        if(user.isBookmarked){
+            bookmark.setBackgroundColor(Color.YELLOW);
+        }
+        else{
+            bookmark.setBackgroundColor(Color.GRAY);
+        }
+
 
     }
 }

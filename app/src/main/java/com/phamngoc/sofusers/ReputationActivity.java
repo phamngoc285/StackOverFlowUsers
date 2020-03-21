@@ -148,7 +148,7 @@ public class ReputationActivity extends AppCompatActivity {
 
                 List<User> items = new ArrayList<>();
                 for(int i =0; i <5; i++){
-                    items.add(new User("Dummy", "https://www.gravatar.com/avatar/24780fb6df85a943c7aea0402c843737?s=128&d=identicon&r=PG", "", "", "" ));
+                    items.add(new User("Dummy", "https://www.gravatar.com/avatar/24780fb6df85a943c7aea0402c843737?s=128&d=identicon&r=PG", Double.valueOf("0"), "", Double.valueOf("0")));
                 }
 
                 //users.addAll(items);
