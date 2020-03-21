@@ -10,11 +10,11 @@ public class User {
     @SerializedName("profile_image")
     public String avatar;
     @SerializedName("reputation")
-    public Double reputation;
+    public double reputation;
     @SerializedName("location")
     public String location;
     @SerializedName("last_access_date")
-    public Double lastAccessDate;
+    public long lastAccessDate;
 
     public boolean isBookmarked;
 
@@ -23,7 +23,7 @@ public class User {
 
     }
 
-    public User(String id, String name, String avatar, Double reputation, String location, Double lastAccessDate) {
+    public User(String id, String name, String avatar, double reputation, String location, long lastAccessDate) {
         this.id = id;
         this.name = name;
         this.avatar = avatar;
@@ -32,7 +32,7 @@ public class User {
         this.lastAccessDate = lastAccessDate;
     }
 
-    public User(String name, String avatar, Double reputation, String location, Double lastAccessDate) {
+    public User(String name, String avatar, double reputation, String location, long lastAccessDate) {
         this.name = name;
         this.avatar = avatar;
         this.reputation = reputation;
@@ -40,7 +40,7 @@ public class User {
         this.lastAccessDate = lastAccessDate;
     }
 
-    public User(String id, String name, String avatar, Double reputation, String location, Double lastAccessDate, boolean isBookmarked) {
+    public User(String id, String name, String avatar, Double reputation, String location, long lastAccessDate, boolean isBookmarked) {
         this.id = id;
         this.name = name;
         this.avatar = avatar;

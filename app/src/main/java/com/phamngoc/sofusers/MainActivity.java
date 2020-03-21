@@ -170,9 +170,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         User item = users.get(position);
 
         Intent reputationIntent = new Intent(MainActivity.this, ReputationActivity.class);
-        reputationIntent.putExtra(Parameters.USERID, item.id);
-        reputationIntent.putExtra(Parameters.USERNAME, item.name);
-        reputationIntent.putExtra(Parameters.USERAVATAR, item.avatar);
+        reputationIntent.putExtra(Parameters.USER_ID, item.id);
+        reputationIntent.putExtra(Parameters.USER_NAME, item.name);
+        reputationIntent.putExtra(Parameters.USER_AVATAR, item.avatar);
+        reputationIntent.putExtra(Parameters.USER_REPUTATION, item.reputation);
+        reputationIntent.putExtra(Parameters.USER_LOCATION, item.location);
+        reputationIntent.putExtra(Parameters.USER_LAST_ACCESS_DATE, item.lastAccessDate);
+        reputationIntent.putExtra(Parameters.IS_USER_BOOKMARKED, item.isBookmarked);
         MainActivity.this.startActivity(reputationIntent);
     }
 

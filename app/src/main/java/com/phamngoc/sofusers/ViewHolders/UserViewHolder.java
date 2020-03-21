@@ -1,16 +1,13 @@
 package com.phamngoc.sofusers.ViewHolders;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.phamngoc.sofusers.Helpers.DateTimeHelper;
 import com.phamngoc.sofusers.Listeners.ItemListener;
 import com.phamngoc.sofusers.Model.User;
 import com.phamngoc.sofusers.R;
@@ -21,6 +18,7 @@ public class UserViewHolder extends BaseViewHolder {
     TextView userName;
     TextView reputation;
     TextView location;
+    TextView lastActive;
     ImageView avatar;
     ImageView bookmark;
 
@@ -53,6 +51,7 @@ public class UserViewHolder extends BaseViewHolder {
         userName = itemView.findViewById(R.id.username);
         reputation = itemView.findViewById(R.id.reputation);
         location = itemView.findViewById(R.id.location);
+        lastActive = itemView.findViewById(R.id.lastActive);
         avatar = itemView.findViewById(R.id.avatar);
         bookmark = itemView.findViewById(R.id.bookmark);
     }
@@ -65,9 +64,9 @@ public class UserViewHolder extends BaseViewHolder {
             userName.setText(user.name);
         }
 
-        if(user.reputation != null){
-            reputation.setText(String.valueOf(user.reputation));
-        }
+
+        reputation.setText(String.valueOf(user.reputation));
+
 
         if(user.location != null && !user.location.isEmpty()){
             location.setText(user.location);
@@ -79,12 +78,13 @@ public class UserViewHolder extends BaseViewHolder {
         }
 
         if(user.isBookmarked){
-            bookmark.setBackgroundColor(Color.YELLOW);
+            bookmark.setImageResource(R.mipmap.bookmarked);
         }
         else{
-            bookmark.setBackgroundColor(Color.GRAY);
+            bookmark.setImageResource(R.mipmap.bookmark);
         }
 
-
+        String daylastactive = DateTimeHelper.GetDateFromTimeStand(user.lastAccessDate);
+        lastActive.setText(daylastactive);
     }
 }

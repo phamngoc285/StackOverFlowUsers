@@ -33,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 AVATAR + " TEXT, " +
                 REPUTATION + " INTEGER," +
                 LOCATION + " TEXT, " +
-                LASTACCESSDATE + " INTEGER DEFAULT (0)" +
+                LASTACCESSDATE + " TEXT" +
                 ")";
 
         db.execSQL(queryCreateTable);
@@ -49,7 +49,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String queryInsertOrUpdate = "INSERT OR REPLACE INTO " + TABLE_BOOKMARKEDUSERS + " ( " +
                 ID +", " + NAME +", " + AVATAR +", " +REPUTATION +", " + LOCATION +", " + LASTACCESSDATE +" ) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
-        db.execSQL(queryInsertOrUpdate, new String[]{user.id, user.name, user.avatar, user.reputation == null? "":String.valueOf(user.reputation), user.location, String.valueOf(user.lastAccessDate)});
+        db.execSQL(queryInsertOrUpdate, new String[]{user.id, user.name, user.avatar, String.valueOf(user.reputation), user.location, String.valueOf(user.lastAccessDate)});
     }
 
     public List<User> GetAllBookmarked(){
@@ -66,7 +66,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 String avatar = cursor.getString(2);
                 Double reputation = cursor.getDouble(3);
                 String location = cursor.getString(4);
-                Double lastAccessDate = cursor.getDouble(3);
+                long lastAccessDate = cursor.getLong(5);
 
                 users.add(new User(id, name, avatar, reputation, location, lastAccessDate, true));
 

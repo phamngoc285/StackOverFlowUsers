@@ -12,11 +12,10 @@ import android.widget.Toast;
 
 import com.phamngoc.sofusers.Adapters.ReputationHistoryAdapter;
 import com.phamngoc.sofusers.Constants.Parameters;
+import com.phamngoc.sofusers.Helpers.DateTimeHelper;
 import com.phamngoc.sofusers.Listeners.PaginationListener;
 import com.phamngoc.sofusers.Model.GetReputationResponse;
-import com.phamngoc.sofusers.Model.GetUserListResponse;
 import com.phamngoc.sofusers.Model.ReputationHistory;
-import com.phamngoc.sofusers.Model.User;
 import com.phamngoc.sofusers.Services.RetrofitClientInstance;
 import com.phamngoc.sofusers.Services.RetrofitClientServices;
 import com.squareup.picasso.Picasso;
@@ -34,11 +33,12 @@ import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 
 public class ReputationActivity extends AppCompatActivity {
     String userid;
-    TextView userName;
-    TextView reputation;
-    TextView location;
-    ImageView avatar;
-    ImageView bookmark;
+    TextView userNameTV;
+    TextView reputationTV;
+    TextView locationTV;
+    TextView lasAccessDateTV;
+    ImageView avatarIV;
+    ImageView bookmarkIV;
     RecyclerView reputationList;
     ReputationHistoryAdapter reputatonAdapter;
     List<ReputationHistory> reputationChanges;
@@ -89,27 +89,45 @@ public class ReputationActivity extends AppCompatActivity {
     }
 
     private void InitViews(){
-        userName = findViewById(R.id.username);
-        reputation = findViewById(R.id.reputation);
-        location = findViewById(R.id.location);
-        avatar = findViewById(R.id.avatar);
-        bookmark = findViewById(R.id.bookmark);
+        userNameTV = findViewById(R.id.username);
+        reputationTV = findViewById(R.id.reputation);
+        locationTV = findViewById(R.id.location);
+        avatarIV = findViewById(R.id.avatar);
+        bookmarkIV = findViewById(R.id.bookmark);
         reputationList = findViewById(R.id.reputation_list);
+        lasAccessDateTV = findViewById(R.id.lastActive);
     }
 
     private void GetParameters(){
         Intent intent = getIntent();
-        userid = intent.getStringExtra(Parameters.USERID);
-        String username = intent.getStringExtra(Parameters.USERNAME);
-        String useravatar = intent.getStringExtra(Parameters.USERAVATAR);
+        userid = intent.getStringExtra(Parameters.USER_ID);
+        String username = intent.getStringExtra(Parameters.USER_NAME);
+        String useravatar = intent.getStringExtra(Parameters.USER_AVATAR);
+        String userlocation = intent.getStringExtra(Parameters.USER_LOCATION);
+        long reputation = intent.getLongExtra(Parameters.USER_REPUTATION, 0);
+        long lastaccessdate = intent.getLongExtra(Parameters.USER_LAST_ACCESS_DATE, 0);
+        boolean isbookmarked = intent.getBooleanExtra(Parameters.IS_USER_BOOKMARKED, false);
 
         if(username != null && !username.isEmpty()){
-            userName.setText(username);
+            userNameTV.setText(username);
         }
 
-        if(username != null && !username.isEmpty()) {
-            Picasso.with(getApplicationContext()).load(useravatar).into(avatar);
+        if(useravatar != null && !useravatar.isEmpty()) {
+            Picasso.with(getApplicationContext()).load(useravatar).into(avatarIV);
         }
+
+        if(userlocation != null && !userlocation.isEmpty()){
+            locationTV.setText(userlocation);
+        }
+
+        reputationTV.setText(String.valueOf(reputation));
+
+        if(isbookmarked){
+            bookmarkIV.setImageResource(R.mipmap.bookmarked);
+        }
+
+        String daylastactive = DateTimeHelper.GetDateFromTimeStand(lastaccessdate);
+        lasAccessDateTV.setText(daylastactive);
     }
 
     private void GetUserReputation() {
@@ -117,7 +135,7 @@ public class ReputationActivity extends AppCompatActivity {
         isLoading = true;
 
         RetrofitClientServices service = RetrofitClientInstance.getRetrofitInstance().create(RetrofitClientServices.class);
-        Call<GetReputationResponse> call = service.GetUserReputation("11683"/*userid*/, String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), STACKOVERFLOW, API_KEY);
+        Call<GetReputationResponse> call = service.GetUserReputation(userid, String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), STACKOVERFLOW, API_KEY);
         call.enqueue(new Callback<GetReputationResponse>() {
             @Override
             public void onResponse(Call<GetReputationResponse> call, Response<GetReputationResponse> response) {
@@ -145,14 +163,6 @@ public class ReputationActivity extends AppCompatActivity {
                 //swipeRefresh.setRefreshing(false);
                 Toast.makeText(ReputationActivity.this, t.getMessage() /*"Opps, something went wrong...Please try later!"*/, Toast.LENGTH_SHORT).show();
                 isLoading = false;
-
-                List<User> items = new ArrayList<>();
-                for(int i =0; i <5; i++){
-                    items.add(new User("Dummy", "https://www.gravatar.com/avatar/24780fb6df85a943c7aea0402c843737?s=128&d=identicon&r=PG", Double.valueOf("0"), "", Double.valueOf("0")));
-                }
-
-                //users.addAll(items);
-                //mUserAdapter.notifyDataSetChanged();
             }
         });
     }
