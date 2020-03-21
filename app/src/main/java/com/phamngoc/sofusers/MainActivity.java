@@ -70,8 +70,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         swipeRefresh.setOnRefreshListener(this);
 
         dbHelper = new DBHelper(this);
-        bookmarkedIds = dbHelper.GetAllBookmarkedUserIDs();
+        bookmarkedIds = new ArrayList<>();
         users = new ArrayList<>();
+
+        //must get bookmarkedID BEFORE get users
+        GetBookmaredIDsInLocal();
         GetUsers();
 
         mUserAdapter = new UserAdapter(users, this, this);
@@ -100,6 +103,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
     }
 
+    private void GetBookmaredIDsInLocal(){
+        bookmarkedIds = dbHelper.GetAllBookmarkedUserIDs();
+    }
+
     private void GetUsers() {
         if(isLoading) return;
         isLoading = true;
@@ -113,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 if (currentPage != PAGE_START && !isLastPage) mUserAdapter.removeLoading();
                 GetUserListResponse result = response.body();
                 for (User user: result.Users) {
-                    if(IsUserBookmared(user)){
+                    if(IsUserBookmarked(user)){
                         user.isBookmarked = true;
                     }
                 }
@@ -136,24 +143,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 swipeRefresh.setRefreshing(false);
                 Toast.makeText(MainActivity.this, t.getMessage() /*"Opps, something went wrong...Please try later!"*/, Toast.LENGTH_SHORT).show();
                 isLoading = false;
-
-                List<User> items = new ArrayList<>();
-                for(int i =0; i <5; i++){
-                    items.add(new User("Dummy", "https://www.gravatar.com/avatar/24780fb6df85a943c7aea0402c843737?s=128&d=identicon&r=PG", Double.valueOf("0"), "", Double.valueOf("0") ));
-                }
-
-                users.addAll(items);
-                mUserAdapter.notifyDataSetChanged();
             }
         });
     }
 
-    private boolean IsUserBookmared(User user){
-        if(bookmarkedIds.contains(user.id))
-        {
-            return true;
-        }
-        return false;
+    private boolean IsUserBookmarked(User user){
+        return bookmarkedIds.contains(user.id);
     }
 
     @Override
@@ -162,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         currentPage = PAGE_START;
         isLastPage = false;
         mUserAdapter.clear();
+        //must get bookmarkedID BEFORE get users
+        GetBookmaredIDsInLocal();
         GetUsers();
 
     }
@@ -180,8 +177,21 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     @Override
-    public void onItemBookMarked(View view, int position) {
-        Toast.makeText(this, "Item book marked", Toast.LENGTH_LONG).show();
-        dbHelper.BookMarkUser(users.get(position));
+    public void onBookMarkClicked(View view, int position) {
+        User user = users.get(position);
+        if(!user.isBookmarked){
+            dbHelper.BookMarkUser(user);
+            user.isBookmarked = true;
+            mUserAdapter.notifyItemChanged(position);
+            Toast.makeText(this, "Bookmark saved", Toast.LENGTH_LONG).show();
+        }
+        else {
+            dbHelper.RemoveBookmard(user.id);
+            user.isBookmarked = false;
+            bookmarkedIds.remove(user.id);
+            mUserAdapter.notifyItemChanged(position);
+            Toast.makeText(this, "Bookmark removed", Toast.LENGTH_LONG).show();
+        }
+
     }
 }

@@ -53,7 +53,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public List<User> GetAllBookmarked(){
-
         List<User> users = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
@@ -80,6 +79,11 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return users;
+    }
+
+    public void RemoveBookmard(String userid){
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_BOOKMARKEDUSERS + " where id = ?", new String[]{userid});
     }
 
     public List<String> GetAllBookmarkedUserIDs(){

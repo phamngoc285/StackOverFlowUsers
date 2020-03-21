@@ -44,7 +44,7 @@ public class UserViewHolder extends BaseViewHolder {
             @Override
             public void onClick(View v) {
                 //bookmark.setBackground(R.color.colorAccent);
-                listener.onItemBookMarked(v, getAdapterPosition());
+                listener.onBookMarkClicked(v, getAdapterPosition());
             }
         });
     }
