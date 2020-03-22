@@ -7,16 +7,16 @@ public class ReputationHistory {
     @SerializedName("reputation_history_type")
     public String Type;
     @SerializedName("reputation_change")
-    public String Change;
+    public int Change;
     @SerializedName("creation_date")
-    public String CreatedAt;
+    public long CreatedAt;
     @SerializedName("post_id")
     public String PostId;
 
     public ReputationHistory() {
     }
 
-    public ReputationHistory(String reputationType, String change, String createdAt, String postId) {
+    public ReputationHistory(String reputationType, int change, long createdAt, String postId) {
         Type = reputationType;
         Change = change;
         CreatedAt = createdAt;

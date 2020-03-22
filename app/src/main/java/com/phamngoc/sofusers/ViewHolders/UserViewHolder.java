@@ -41,8 +41,7 @@ public class UserViewHolder extends BaseViewHolder {
         bookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //bookmark.setBackground(R.color.colorAccent);
-                listener.onBookMarkClicked(v, getAdapterPosition());
+                listener.onItemBookMarkClicked(v, getAdapterPosition());
             }
         });
     }

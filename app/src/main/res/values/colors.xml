@@ -5,4 +5,8 @@
     <color name="colorAccent">#F87F02</color>
     <color name="cell_bg_color">#FFFFFF</color>
     <color name="list_bg_color">#D6D6D6</color>
+    <color name="good_change_color">#258D29</color>
+    <color name="bad_change_color">#B32014</color>
+    <color name="strong_info_color">#073C57</color>
+    <color name="reputation_color">#945B01</color>
 </resources>

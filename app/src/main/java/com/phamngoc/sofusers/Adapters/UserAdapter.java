@@ -83,6 +83,7 @@ public class UserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     public void removeLoading() {
         isLoaderVisible = false;
+        if(users.size() == 0) return;
         int position = users.size() - 1;
         User item = users.get(position);
         if (item != null) {

@@ -24,6 +24,7 @@
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/strong_info_color"
             android:textSize="@dimen/big_font"
             android:text="NONAME"/>
 
@@ -31,6 +32,7 @@
             android:id="@+id/reputation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/reputation_color"
             android:textSize="@dimen/medium_font"
             android:text="NoReputation"/>
 

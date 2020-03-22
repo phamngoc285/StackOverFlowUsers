@@ -1,5 +1,6 @@
 package com.phamngoc.sofusers.Adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,12 @@ public class ReputationHistoryAdapter extends RecyclerView.Adapter<BaseViewHolde
     private static final int VIEW_TYPE_NORMAL = 1;
     private boolean isLoaderVisible = false;
 
+    Context context;
     private List<ReputationHistory> reputationChanges;
 
-    public ReputationHistoryAdapter(List<ReputationHistory> reputationChanges) {
+    public ReputationHistoryAdapter(List<ReputationHistory> reputationChanges, Context context) {
         this.reputationChanges = reputationChanges;
+        this.context = context;
     }
 
     @NonNull
@@ -34,7 +37,7 @@ public class ReputationHistoryAdapter extends RecyclerView.Adapter<BaseViewHolde
         if(viewType == VIEW_TYPE_NORMAL){
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.reputation_history_cell, parent, false);
-            return new ReputationHistoryViewHolder(view);
+            return new ReputationHistoryViewHolder(view, context);
         } else if(viewType == VIEW_TYPE_LOADING){
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.loading_cell, parent, false);

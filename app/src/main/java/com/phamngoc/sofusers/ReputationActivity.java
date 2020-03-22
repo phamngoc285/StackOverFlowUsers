@@ -51,16 +51,12 @@ public class ReputationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_reputation);
-
+        setTitle("User's reputation history");
         InitViews();
         GetParameters();
         reputationChanges = new ArrayList<>();
-        List<ReputationHistory> items = new ArrayList<>();
-        for(int i =0; i <5; i++){
-            items.add(new ReputationHistory("Vote up", String.valueOf(i), "", ""));
-        }
 
-        reputatonAdapter = new ReputationHistoryAdapter(reputationChanges);
+        reputatonAdapter = new ReputationHistoryAdapter(reputationChanges, this);
         reputationList.setAdapter(reputatonAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -83,9 +79,6 @@ public class ReputationActivity extends AppCompatActivity {
             }
         });
         GetUserReputation();
-        /*reputationChanges.addAll(items);
-        reputatonAdapter.notifyDataSetChanged();*/
-
     }
 
     private void InitViews(){
@@ -104,7 +97,7 @@ public class ReputationActivity extends AppCompatActivity {
         String username = intent.getStringExtra(Parameters.USER_NAME);
         String useravatar = intent.getStringExtra(Parameters.USER_AVATAR);
         String userlocation = intent.getStringExtra(Parameters.USER_LOCATION);
-        long reputation = intent.getLongExtra(Parameters.USER_REPUTATION, 0);
+        double reputation = intent.getDoubleExtra(Parameters.USER_REPUTATION, 0);
         long lastaccessdate = intent.getLongExtra(Parameters.USER_LAST_ACCESS_DATE, 0);
         boolean isbookmarked = intent.getBooleanExtra(Parameters.IS_USER_BOOKMARKED, false);
 
@@ -144,9 +137,15 @@ public class ReputationActivity extends AppCompatActivity {
                 //remove loading before add items
                 if (currentPage != PAGE_START) reputatonAdapter.removeLoading();
                 GetReputationResponse result = response.body();
-                reputationChanges.addAll(result.ReputationChanges);
-                //reputatonAdapter.notifyDataSetChanged();
-                currentPage++;
+                if(result != null && result.ReputationChanges != null && result.ReputationChanges.size() > 0){
+                    reputationChanges.addAll(result.ReputationChanges);
+                    currentPage++;
+                }
+                else {
+                    Toast.makeText(ReputationActivity.this, "Couldn't load more reputation history.", Toast.LENGTH_SHORT).show();
+                }
+
+
                 if(result.HasMore){
                     reputatonAdapter.addLoading();
                 }

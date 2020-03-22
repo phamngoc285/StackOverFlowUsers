@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     List<String> bookmarkedIds;
 
     DBHelper dbHelper;
-
+    private boolean isInBookmarkedViewType;
     private int currentPage = PAGE_START;
     private boolean isLastPage = false;
     private boolean isLoading = false;
@@ -58,10 +58,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         mAllBookmaredButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentPage != PAGE_START && !isLastPage) mUserAdapter.removeLoading();
-                mUserAdapter.clear();
-                List<User> bookmarkedusers = dbHelper.GetAllBookmarked();
-                users.addAll(bookmarkedusers);
+                SwitchView();
             }
         });
 
@@ -101,6 +98,27 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 return isLoading;
             }
         });
+    }
+
+    //Switch between All users and Bookmarked users
+    private void SwitchView(){
+        if(isInBookmarkedViewType == false){
+            //show book marked users
+            setTitle("Bookmarked Users");
+            if(currentPage != PAGE_START && !isLastPage) mUserAdapter.removeLoading();
+            mUserAdapter.clear();
+            List<User> bookmarkedusers = dbHelper.GetAllBookmarked();
+            users.addAll(bookmarkedusers);
+            isInBookmarkedViewType = true;
+        }
+        else{
+            //show all users
+            mUserAdapter.clear();
+            setTitle("SOF Users");
+            GetUsers();
+            isInBookmarkedViewType = false;
+        }
+
     }
 
     private void GetBookmaredIDsInLocal(){
@@ -181,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     @Override
-    public void onBookMarkClicked(View view, int position) {
+    public void onItemBookMarkClicked(View view, int position) {
         User user = users.get(position);
         if(!user.isBookmarked){
             dbHelper.BookMarkUser(user);
