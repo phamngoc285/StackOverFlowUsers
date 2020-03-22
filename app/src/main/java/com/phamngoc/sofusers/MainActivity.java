@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.phamngoc.sofusers.Adapters.UserAdapter;
+import com.phamngoc.sofusers.Constants.BookmarkStatus;
 import com.phamngoc.sofusers.Constants.Parameters;
 import com.phamngoc.sofusers.Helpers.DBHelper;
 import com.phamngoc.sofusers.Services.RetrofitClientServices;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     SwipeRefreshLayout swipeRefresh;
     List<User> users;
     List<String> bookmarkedIds;
+    public static ItemListener itemListener;
 
     DBHelper dbHelper;
     private boolean isInBookmarkedViewType;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        itemListener = this;
 
         mAllBookmaredButton = findViewById(R.id.allBookmarkedButton);
         mAllBookmaredButton.setOnClickListener(new View.OnClickListener() {
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         GetBookmaredIDsInLocal();
         GetUsers();
 
-        mUserAdapter = new UserAdapter(users, this, this);
+        mUserAdapter = new UserAdapter(users, this, itemListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -195,17 +198,19 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         reputationIntent.putExtra(Parameters.USER_LOCATION, item.location);
         reputationIntent.putExtra(Parameters.USER_LAST_ACCESS_DATE, item.lastAccessDate);
         reputationIntent.putExtra(Parameters.IS_USER_BOOKMARKED, item.isBookmarked);
+        reputationIntent.putExtra(Parameters.USER_POSITION, position);
         MainActivity.this.startActivity(reputationIntent);
     }
 
     @Override
-    public void onItemBookMarkClicked(View view, int position) {
+    public BookmarkStatus onItemBookMarkClicked(View view, int position) {
         User user = users.get(position);
         if(!user.isBookmarked){
             dbHelper.BookMarkUser(user);
             user.isBookmarked = true;
             mUserAdapter.notifyItemChanged(position);
             Toast.makeText(this, "Bookmark saved", Toast.LENGTH_LONG).show();
+            return BookmarkStatus.Bookmarked;
         }
         else {
             dbHelper.RemoveBookmard(user.id);
@@ -213,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             bookmarkedIds.remove(user.id);
             mUserAdapter.notifyItemChanged(position);
             Toast.makeText(this, "Bookmark removed", Toast.LENGTH_LONG).show();
+            return BookmarkStatus.NotBookmarked;
         }
 
     }

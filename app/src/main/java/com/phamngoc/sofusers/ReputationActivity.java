@@ -6,16 +6,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.phamngoc.sofusers.Adapters.ReputationHistoryAdapter;
+import com.phamngoc.sofusers.Constants.BookmarkStatus;
 import com.phamngoc.sofusers.Constants.Parameters;
+import com.phamngoc.sofusers.Helpers.DBHelper;
 import com.phamngoc.sofusers.Helpers.DateTimeHelper;
 import com.phamngoc.sofusers.Listeners.PaginationListener;
 import com.phamngoc.sofusers.Model.GetReputationResponse;
 import com.phamngoc.sofusers.Model.ReputationHistory;
+import com.phamngoc.sofusers.Model.User;
 import com.phamngoc.sofusers.Services.RetrofitClientInstance;
 import com.phamngoc.sofusers.Services.RetrofitClientServices;
 import com.squareup.picasso.Picasso;
@@ -32,7 +36,6 @@ import static com.phamngoc.sofusers.Constants.APIConstants.STACKOVERFLOW;
 import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 
 public class ReputationActivity extends AppCompatActivity {
-    String userid;
     TextView userNameTV;
     TextView reputationTV;
     TextView locationTV;
@@ -46,6 +49,9 @@ public class ReputationActivity extends AppCompatActivity {
     private boolean isLastPage = false;
     private boolean isLoading = false;
 
+    User user;
+    //user position in list
+    int userposition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,17 +95,27 @@ public class ReputationActivity extends AppCompatActivity {
         bookmarkIV = findViewById(R.id.bookmark);
         reputationList = findViewById(R.id.reputation_list);
         lasAccessDateTV = findViewById(R.id.lastActive);
+
+        bookmarkIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BookMarkClicked(user);
+            }
+        });
     }
 
     private void GetParameters(){
         Intent intent = getIntent();
-        userid = intent.getStringExtra(Parameters.USER_ID);
+        String userid = intent.getStringExtra(Parameters.USER_ID);
         String username = intent.getStringExtra(Parameters.USER_NAME);
         String useravatar = intent.getStringExtra(Parameters.USER_AVATAR);
         String userlocation = intent.getStringExtra(Parameters.USER_LOCATION);
         double reputation = intent.getDoubleExtra(Parameters.USER_REPUTATION, 0);
         long lastaccessdate = intent.getLongExtra(Parameters.USER_LAST_ACCESS_DATE, 0);
         boolean isbookmarked = intent.getBooleanExtra(Parameters.IS_USER_BOOKMARKED, false);
+        userposition = intent.getIntExtra(Parameters.USER_POSITION, -1);
+
+        user = new User(userid, username, useravatar, reputation, userlocation, lastaccessdate, isbookmarked);
 
         if(username != null && !username.isEmpty()){
             userNameTV.setText(username);
@@ -123,12 +139,27 @@ public class ReputationActivity extends AppCompatActivity {
         lasAccessDateTV.setText(daylastactive);
     }
 
+    public void BookMarkClicked(User user) {
+        if(userposition >= 0){
+            BookmarkStatus result = MainActivity.itemListener.onItemBookMarkClicked(null, userposition);
+
+            if(result == BookmarkStatus.Bookmarked){
+                user.isBookmarked = true;
+                bookmarkIV.setImageResource(R.mipmap.bookmarked);
+            }
+            else if(result == BookmarkStatus.NotBookmarked){
+                user.isBookmarked = false;
+                bookmarkIV.setImageResource(R.mipmap.bookmark);
+            }
+        }
+    }
+
     private void GetUserReputation() {
         if(isLoading) return;
         isLoading = true;
 
         RetrofitClientServices service = RetrofitClientInstance.getRetrofitInstance().create(RetrofitClientServices.class);
-        Call<GetReputationResponse> call = service.GetUserReputation(userid, String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), STACKOVERFLOW, API_KEY);
+        Call<GetReputationResponse> call = service.GetUserReputation(user.id, String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), STACKOVERFLOW, API_KEY);
         call.enqueue(new Callback<GetReputationResponse>() {
             @Override
             public void onResponse(Call<GetReputationResponse> call, Response<GetReputationResponse> response) {
@@ -164,5 +195,10 @@ public class ReputationActivity extends AppCompatActivity {
                 isLoading = false;
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

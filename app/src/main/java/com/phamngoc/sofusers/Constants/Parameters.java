@@ -8,4 +8,5 @@ public class Parameters {
     public static final String USER_LOCATION = "UserLocation";
     public static final String USER_LAST_ACCESS_DATE = "UserLastAccessDate";
     public static final String IS_USER_BOOKMARKED = "IsUserBookmarked";
+    public static final String USER_POSITION = "UserPosition";
 }

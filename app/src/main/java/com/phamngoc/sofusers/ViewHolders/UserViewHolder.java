@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.phamngoc.sofusers.Constants.BookmarkStatus;
 import com.phamngoc.sofusers.Helpers.DateTimeHelper;
 import com.phamngoc.sofusers.Listeners.ItemListener;
 import com.phamngoc.sofusers.Model.User;
@@ -41,7 +42,13 @@ public class UserViewHolder extends BaseViewHolder {
         bookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onItemBookMarkClicked(v, getAdapterPosition());
+                BookmarkStatus result = listener.onItemBookMarkClicked(v, getAdapterPosition());
+                if(result == BookmarkStatus.Bookmarked){
+                    bookmark.setImageResource(R.mipmap.bookmarked);
+                }
+                else if(result == BookmarkStatus.NotBookmarked){
+                    bookmark.setImageResource(R.mipmap.bookmark);
+                }
             }
         });
     }
