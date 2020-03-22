@@ -6,10 +6,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
-import android.icu.text.CaseMap;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.phamngoc.sofusers.Adapters.UserAdapter;
@@ -37,7 +36,7 @@ import static com.phamngoc.sofusers.Listeners.PaginationListener.PAGE_START;
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener , ItemListener {
 
     RecyclerView mUserList;
-    Button mAllBookmaredButton;
+    ImageView mAllBookmaredButton;
     UserAdapter mUserAdapter;
     SwipeRefreshLayout swipeRefresh;
     List<User> users;
@@ -56,7 +55,18 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         itemListener = this;
+        users = new ArrayList<>();
+        InitViews();
+        dbHelper = new DBHelper(this);
+        bookmarkedIds = new ArrayList<>();
 
+        //must get bookmarkedID BEFORE get users
+        GetBookmaredIDsInLocal();
+        GetUsers();
+
+    }
+
+    private void InitViews(){
         mAllBookmaredButton = findViewById(R.id.allBookmarkedButton);
         mAllBookmaredButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,14 +79,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         swipeRefresh = findViewById(R.id.swipeRefresh);
         swipeRefresh.setOnRefreshListener(this);
 
-        dbHelper = new DBHelper(this);
-        bookmarkedIds = new ArrayList<>();
-        users = new ArrayList<>();
-
-        //must get bookmarkedID BEFORE get users
-        GetBookmaredIDsInLocal();
-        GetUsers();
-
         mUserAdapter = new UserAdapter(users, this, itemListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -88,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         mUserList.addOnScrollListener(new PaginationListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
+                if(isInBookmarkedViewType) return;
                 GetUsers();
             }
 
@@ -117,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         else{
             //show all users
             mUserAdapter.clear();
+            currentPage = PAGE_START;
             setTitle("SOF Users");
             GetUsers();
             isInBookmarkedViewType = false;
@@ -131,6 +135,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private void GetUsers() {
         if(isLoading) return;
         isLoading = true;
+        if(currentPage == PAGE_START){
+            swipeRefresh.setRefreshing(true);
+        }
 
         RetrofitClientServices service = RetrofitClientInstance.getRetrofitInstance().create(RetrofitClientServices.class);
         Call<GetUserListResponse> call = service.GetUsers(String.valueOf(currentPage), String.valueOf(PaginationListener.PAGE_SIZE), STACKOVERFLOW, API_KEY);
@@ -162,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             public void onFailure(Call<GetUserListResponse> call, Throwable t) {
                 if (currentPage != PAGE_START) mUserAdapter.removeLoading();
                 swipeRefresh.setRefreshing(false);
-                Toast.makeText(MainActivity.this, t.getMessage() /*"Opps, something went wrong...Please try later!"*/, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, t.getMessage() /*"Oops, something went wrong...Please try later!"*/, Toast.LENGTH_SHORT).show();
                 isLoading = false;
             }
         });
@@ -174,20 +181,25 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        itemCount = 0;
-        currentPage = PAGE_START;
-        isLastPage = false;
-        mUserAdapter.clear();
-        //must get bookmarkedID BEFORE get users
-        GetBookmaredIDsInLocal();
-        GetUsers();
-
+        if(isInBookmarkedViewType){
+            mUserAdapter.clear();
+            List<User> bookmarkedusers = dbHelper.GetAllBookmarked();
+            users.addAll(bookmarkedusers);
+            swipeRefresh.setRefreshing(false);
+        }
+        else {
+            itemCount = 0;
+            currentPage = PAGE_START;
+            isLastPage = false;
+            mUserAdapter.clear();
+            //must get bookmarkedID BEFORE get users
+            GetBookmaredIDsInLocal();
+            GetUsers();
+        }
     }
 
     @Override
     public void onItemClicked(View view, int position) {
-        Toast.makeText(this, "Item clicked", Toast.LENGTH_LONG).show();
-
         User item = users.get(position);
 
         Intent reputationIntent = new Intent(MainActivity.this, ReputationActivity.class);
@@ -208,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         if(!user.isBookmarked){
             dbHelper.BookMarkUser(user);
             user.isBookmarked = true;
+            bookmarkedIds.add(user.id);
             mUserAdapter.notifyItemChanged(position);
             Toast.makeText(this, "Bookmark saved", Toast.LENGTH_LONG).show();
             return BookmarkStatus.Bookmarked;

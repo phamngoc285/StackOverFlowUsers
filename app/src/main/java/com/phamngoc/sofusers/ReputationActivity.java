@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ public class ReputationActivity extends AppCompatActivity {
     ImageView avatarIV;
     ImageView bookmarkIV;
     RecyclerView reputationList;
+    LinearLayout noreputationview;
     ReputationHistoryAdapter reputatonAdapter;
     List<ReputationHistory> reputationChanges;
     private int currentPage = PAGE_START;
@@ -95,7 +97,7 @@ public class ReputationActivity extends AppCompatActivity {
         bookmarkIV = findViewById(R.id.bookmark);
         reputationList = findViewById(R.id.reputation_list);
         lasAccessDateTV = findViewById(R.id.lastActive);
-
+        noreputationview = findViewById(R.id.no_reputation_view);
         bookmarkIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,6 +156,17 @@ public class ReputationActivity extends AppCompatActivity {
         }
     }
 
+    void ShowReputation(){
+        if(reputationChanges != null && reputationChanges.size() > 0){
+            reputationList.setVisibility(View.VISIBLE);
+            noreputationview.setVisibility(View.GONE);
+        }
+        else {
+            reputationList.setVisibility(View.GONE);
+            noreputationview.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void GetUserReputation() {
         if(isLoading) return;
         isLoading = true;
@@ -185,6 +198,7 @@ public class ReputationActivity extends AppCompatActivity {
                 }
 
                 isLoading = false;
+                ShowReputation();
             }
 
             @Override
@@ -193,12 +207,9 @@ public class ReputationActivity extends AppCompatActivity {
                 //swipeRefresh.setRefreshing(false);
                 Toast.makeText(ReputationActivity.this, t.getMessage() /*"Opps, something went wrong...Please try later!"*/, Toast.LENGTH_SHORT).show();
                 isLoading = false;
+                ShowReputation();
             }
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
 }

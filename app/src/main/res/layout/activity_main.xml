@@ -25,13 +25,13 @@
         android:background="@color/list_bg_color"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <Button
+    <ImageView
         android:id="@+id/allBookmarkedButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/colorPrimaryDark"
+        android:src="@mipmap/bookmark_switch_view"
         android:layout_margin="@dimen/large_margin"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
